@@ -1,0 +1,73 @@
+//
+// Scaffolding
+// --------------------------------------------------
+
+
+// Body reset
+// -------------------------
+html {
+    height:100%;
+    display:block;
+}
+body {
+	position:relative;
+	.clearfix;
+	margin: 0;
+	padding:0;
+	font-family: @baseFontFamily;
+	font-size: @baseFontSize;
+	line-height: @baseLineHeight;
+	color: @textColor;
+	min-height:100%;
+	display:block;
+	background-color: @bodyBackground;
+}
+
+
+// Links
+// -------------------------
+
+a {
+  color: @linkColor;
+  text-decoration: none;
+  border-bottom:1px solid transparent;
+  .transition(all 0.3s ease-in);
+  vertical-align:top;
+  ouline:0;
+  .well & {
+      font-size:14px;
+      color:@asbestos;
+  }
+}
+a:hover,
+a:focus {
+  color: @linkColorHover;
+  text-decoration: none;
+  border-bottom:1px solid @linkColorHover;
+  .well & {
+      color:@peter-river;
+  }
+}
+
+
+// Images
+// -------------------------
+
+// Rounded corners
+.img-rounded {
+  .border-radius(6px);
+}
+
+// Add polaroid-esque trim
+.img-polaroid {
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,.2);
+  .box-shadow(0 1px 3px rgba(0,0,0,.1));
+}
+
+// Perfect circle
+.img-circle {
+  .border-radius(500px); // crank the border-radius so it works with most reasonably sized images
+}

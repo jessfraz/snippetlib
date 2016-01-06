@@ -1,0 +1,40 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="/">Code Snippet Library</a>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li{{#ifCond category.slug "html"}} class="active"{{/ifCond}}><a href="/html">html</a></li>
+                    <li{{#ifCond category.slug "css"}} class="active"{{/ifCond}}><a href="/css">css</a></li>
+                    <li{{#ifCond category.slug "jquery"}} class="active"{{/ifCond}}><a href="/jquery">javascript</a></li>
+                    <li{{#ifCond category.slug "php"}} class="active"{{/ifCond}}><a href="/php">php</a></li>
+                    <li{{#ifCond category.slug "terminal"}} class="active"{{/ifCond}}><a href="/terminal">terminal</a></li>
+                    <li{{#ifCond category.slug "sql"}} class="active"{{/ifCond}}><a href="/sql">sql</a></li>
+                    <li{{#ifCond category.slug "wordpress"}} class="active"{{/ifCond}}><a href="/wordpress">wordpress</a></li>
+                    <li class="dropdown" id="apis">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#apis">api <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/facebook">Facebook</a></li>
+                        <li><a href="/foursquare">Foursquare</a></li>
+                        <li><a href="/google_analytics">Google Analytics</a></li>
+                        <li><a href="/google_charts">Google Charts</a></li>
+                        <li><a href="/google_maps">Google Maps</a></li>
+                        <li><a href="/instagram">Instagram</a></li>
+                        <li><a href="/lastfm">Last.Fm</a></li>
+                        <li><a href="/mailchimp">Mailchimp</a></li>
+                        <li><a href="/mailgun">Mailgun</a></li>
+                        <li><a href="/pinterest">Pinterest</a></li>
+                        <li><a href="/tumblr">Tumblr</a></li>
+                        <li><a href="/twitter">Twitter</a></li>
+                    </ul>
+                    </li> 
+                </ul>
+                <ul class="nav pull-right social-nav">
+                    <li><a href="http://twitter.com/frazelledazzell" target="_blank" onClick="_gaq.push(['_trackEvent', 'twitter', 'header']);"><span class="ss-icon ss-social-circle ss-twitter"></span></a></li>
+                    <li><a href="https://github.com/jfrazelle" target="_blank"  onClick="_gaq.push(['_trackEvent', 'github', 'header']);"><span class="ss-icon ss-social-circle ss-github"></span></a></li>
+                    <li><a class="email-scroll" href="#email"><span class="ss-icon ss-social-circle ss-mail"></span></a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div><!--/.container -->
+    </div><!--/.navbar-inner -->
+</header><!--/.navbar -->

@@ -1,0 +1,15 @@
+<div class="span4">
+    <div class="well sidebar-nav">
+        <div id="search-header">
+            <form class="search" method="get">
+                <input class="input focused" id="search-box" name="search" type="text" autocomplete="off" placeholder="Type to find {{category.name}} snippets." />
+                <input type="submit" value="" class="hide" />
+			</form>
+		</div>
+		<div id="results">
+		    {{#each snippets}}
+                <a class="block" href="/{{this.category}}/{{this.slug}}">{{{this.name}}}</a>
+            {{/each}}
+        </div>
+	</div><!--/.well -->
+</div><!--/span-->

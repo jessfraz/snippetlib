@@ -1,0 +1,18 @@
+<section class="container-fluid">
+	<div class="row wrapper">
+        {{>sidebar}}
+
+        <div class="span8 pull-right"> 
+            {{#if snippet}}
+                {{>breadcrumbs}}
+                <h2>{{{stripSlashes snippet.name}}}</h2>
+		        <p class="description">{{{stripSlashes description}}}</p>
+		        <pre class="prettyprint">{{stripSlashes snippet.snippet}}</pre>
+            {{else}} 
+                <blockquote>
+			        <p><strong>{{{category.greeting}}}</strong><br>You are currently browsing the <strong>{{category.name}}</strong> snippets. You can search these snippets on your left or select a different category above.</p>
+			    </blockquote>
+            {{/if}}
+        </div>
+    </div>
+</section>

@@ -44,24 +44,17 @@ func (h *Handler) sitemapHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, h.sitemap)
 }
 
-type searchRequest struct {
-	category string
-	q        string
-}
-
 func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debugf("[page] %s", r.URL)
 
 	w.Header().Set("Content-Type", "application/json")
 
-	var sr searchRequest
-	d := json.NewDecoder(r.Body)
-	if err := d.Decode(&sr); err != nil {
-		writeError(w, err.Error())
+	if err := r.ParseForm(); err != nil {
+		writeError(w, fmt.Sprintf("parsing form failed: %v", err))
 		return
 	}
 
-	data, err := search(h.dbConn, sr.category, sr.q)
+	data, err := search(h.dbConn, r.Form.Get("category"), r.Form.Get("q"))
 	if err != nil {
 		writeError(w, err.Error())
 		return

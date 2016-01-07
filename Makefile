@@ -47,4 +47,4 @@ db:
 drun: dbuild
 	@docker run --rm -it \
 		--net container:snippets-db \
-		jess/snippetlib
+		jess/snippetlib -d

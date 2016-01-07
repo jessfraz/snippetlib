@@ -3,9 +3,14 @@ package main
 import (
 	"flag"
 	"net/http"
+	"path"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+)
+
+const (
+	filesPrefix = "/src"
 )
 
 var (
@@ -13,6 +18,8 @@ var (
 	port     string
 	certFile string
 	keyFile  string
+
+	debug bool
 )
 
 func init() {
@@ -21,26 +28,37 @@ func init() {
 
 	flag.StringVar(&certFile, "cert", "", "path to ssl certificate")
 	flag.StringVar(&keyFile, "key", "", "path to ssl key")
+
+	flag.BoolVar(&debug, "d", false, "run in debug mode")
 	flag.Parse()
+
+	// set log level
+	if debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 }
 
 func main() {
 	// create mux router
 	r := mux.NewRouter()
+	r.StrictSlash(true)
 
 	// static files handler
-	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir("/src/static")))
-	r.Handle("/static/", staticHandler)
+	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir(path.Join(filesPrefix, "static"))))
+	r.PathPrefix("/static/").Handler(staticHandler)
 
 	// template handler
 	h := Handler{
 		dbConn: dbConn,
 	}
-	r.HandleFunc("/search", h.sitemapHandler).Methods("GET")
+	r.HandleFunc("/sitemap.xml", h.sitemapHandler).Methods("GET")
 	r.HandleFunc("/search", h.searchHandler).Methods("POST")
 	r.HandleFunc("/newsletter_signup", h.newsletterSignupHandler).Methods("POST")
-	r.HandleFunc("/{category}/{snippet}", h.snippetHandler).Methods("GET")
 	r.HandleFunc("/{category}", h.categoryHandler).Methods("GET")
+	r.HandleFunc("/{category}/{snippet}", h.snippetHandler).Methods("GET")
+	r.HandleFunc("/", h.indexHandler).Methods("GET")
+
+	// TODO: 404
 
 	// set up the server
 	server := &http.Server{

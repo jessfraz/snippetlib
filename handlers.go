@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path"
+	"regexp"
+	"strings"
+	"text/template"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
@@ -33,20 +37,47 @@ type Handler struct {
 }
 
 func (h *Handler) sitemapHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugf("[page] %s", r.URL)
+
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, JSONResponse{
 		"page": "sitemap.xml",
 	})
 }
 
+type searchRequest struct {
+	category string
+	q        string
+}
+
 func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugf("[page] %s", r.URL)
+
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, JSONResponse{
-		"page": "search",
-	})
+
+	var sr searchRequest
+	d := json.NewDecoder(r.Body)
+	if err := d.Decode(&sr); err != nil {
+		writeError(w, err.Error())
+		return
+	}
+
+	data, err := search(h.dbConn, sr.category, sr.q)
+	if err != nil {
+		writeError(w, err.Error())
+		return
+	}
+	str, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		logrus.Warn("marshaling search data failed: %v", err)
+	}
+
+	fmt.Fprint(w, str)
 }
 
 func (h *Handler) newsletterSignupHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugf("[page] %s", r.URL)
+
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, JSONResponse{
 		"page": "newsletter_signup",
@@ -54,47 +85,79 @@ func (h *Handler) newsletterSignupHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (h *Handler) categoryHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugf("[page] %s", r.URL)
+
 	v := mux.Vars(r)
 	category, ok := v["category"]
 	if !ok {
 		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %#v", v))
+		return
 	}
 
-	page, err := query(h.dbConn, category, "")
-	if err != nil {
-		writeError(w, err.Error())
-	}
-	page.URL = r.URL.String()
-	logrus.Infof("result: %#v", page)
-
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, JSONResponse{
-		"page": "category",
-	})
+	h.renderTemplate(w, r, category, "")
 }
 
 func (h *Handler) snippetHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugf("[page] %s", r.URL)
+
 	v := mux.Vars(r)
 	category, ok := v["category"]
 	if !ok {
 		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %#v", v))
+		return
 	}
 	slug, ok := v["snippet"]
 	if !ok {
 		writeError(w, fmt.Sprintf("getting snippetparameter from vars failed: %#v", v))
+		return
 	}
 
+	h.renderTemplate(w, r, category, slug)
+}
+
+func (h *Handler) indexHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugf("[page] %s", r.URL)
+
+	h.renderTemplate(w, r, "facebook", "")
+}
+
+func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, category, slug string) {
 	page, err := query(h.dbConn, category, slug)
 	if err != nil {
 		writeError(w, err.Error())
+		return
 	}
 	page.URL = r.URL.String()
-	logrus.Infof("result: %#v", page)
 
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, JSONResponse{
-		"page": "category/snippet",
-	})
+	logrus.Infof("%#v", page)
+
+	// render the template
+	templateDir := path.Join(filesPrefix, "templates")
+	lp := path.Join(templateDir, "layout.html")
+
+	// set up custom functions
+	funcMap := template.FuncMap{
+		"stripSlashes": func(s string) string {
+			return strings.Replace(s, "/", "", -1)
+		},
+		"stripTags": func(s string) string {
+			reHTML := regexp.MustCompile(`<.+>`)
+			return reHTML.ReplaceAllString(s, "")
+		},
+		"toTitle": func(s string) string {
+			return strings.ToTitle(s)
+		},
+		"toUppercase": func(s string) string {
+			return strings.ToUpper(s)
+		},
+	}
+
+	// parse & execute the template
+	tmpl := template.Must(template.New("").Funcs(funcMap).ParseFiles(lp))
+	if err := tmpl.ExecuteTemplate(w, "layout", page); err != nil {
+		writeError(w, fmt.Sprintf("Execute template failed: %v", err))
+		return
+	}
 }
 
 // writeError sends an error back to the requester

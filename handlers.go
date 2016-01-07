@@ -11,6 +11,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"github.com/jfrazelle/snippetlib/mailchimp"
 	_ "github.com/lib/pq"
 )
 
@@ -64,8 +65,21 @@ func (h *Handler) newsletterSignupHandler(w http.ResponseWriter, r *http.Request
 	logrus.Debugf("[page] %s", r.URL)
 
 	w.Header().Set("Content-Type", "application/json")
+
+	if err := r.ParseForm(); err != nil {
+		writeError(w, r, fmt.Sprintf("parsing form failed: %v", err))
+		return
+	}
+
+	email := r.Form.Get("email")
+	if err := mailchimp.Subscribe(mailchimpAPIKey, mailchimpListID, email); err != nil {
+		writeError(w, r, fmt.Sprintf("subscribing email (%s) to list (%s) failed: %v", email, mailchimpListID, err))
+		return
+	}
+
+	logrus.Infof("subscribed %s to newsletter", email)
 	fmt.Fprint(w, JSONResponse{
-		"page": "newsletter_signup",
+		"response": "success",
 	})
 }
 

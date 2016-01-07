@@ -47,4 +47,4 @@ db:
 drun: dbuild
 	@docker run --rm -it \
 		--net container:snippets-db \
-		jess/snippetlib -d
+		jess/snippetlib -d --mailchimp-apikey "$(MAILCHIMP_APIKEY)" --mailchimp-listid "$(MAILCHIMP_LISTID)"

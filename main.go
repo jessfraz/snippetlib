@@ -14,7 +14,10 @@ const (
 )
 
 var (
-	dbConn   string
+	dbConn          string
+	mailchimpAPIKey string
+	mailchimpListID string
+
 	port     string
 	certFile string
 	keyFile  string
@@ -25,8 +28,10 @@ var (
 
 func init() {
 	flag.StringVar(&dbConn, "dbconn", "postgres://postgres:@127.0.0.1:5432/db?sslmode=disable", "database connection string")
-	flag.StringVar(&port, "p", "3000", "port for server to run on")
+	flag.StringVar(&mailchimpAPIKey, "mailchimp-apikey", "", "Mailchimp APIKey for subscribing to newsletters")
+	flag.StringVar(&mailchimpListID, "mailchimp-listid", "", "Mailchimp List ID for newsletter to subscribe emails to")
 
+	flag.StringVar(&port, "p", "3000", "port for server to run on")
 	flag.StringVar(&certFile, "cert", "", "path to ssl certificate")
 	flag.StringVar(&keyFile, "key", "", "path to ssl key")
 

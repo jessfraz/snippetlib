@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"flag"
+	"fmt"
+	"html/template"
 	"net/http"
 	"path"
 
@@ -18,8 +22,9 @@ var (
 	port     string
 	certFile string
 	keyFile  string
+	debug    bool
 
-	debug bool
+	templateDir = path.Join(filesPrefix, "templates")
 )
 
 func init() {
@@ -39,6 +44,12 @@ func init() {
 }
 
 func main() {
+	// get the sitemap
+	sitemap, err := getSitemap(dbConn)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	// create mux router
 	r := mux.NewRouter()
 	r.StrictSlash(true)
@@ -49,7 +60,8 @@ func main() {
 
 	// template handler
 	h := Handler{
-		dbConn: dbConn,
+		dbConn:  dbConn,
+		sitemap: sitemap,
 	}
 	r.HandleFunc("/sitemap.xml", h.sitemapHandler).Methods("GET")
 	r.HandleFunc("/search", h.searchHandler).Methods("POST")
@@ -71,4 +83,23 @@ func main() {
 	} else {
 		logrus.Fatal(server.ListenAndServe())
 	}
+}
+
+func getSitemap(dbConn string) ([]byte, error) {
+	urls, err := sitemapQuery(dbConn)
+	if err != nil {
+		return nil, err
+	}
+
+	// render the template
+	sm := path.Join(templateDir, "sitemap.xml")
+	tmpl := template.Must(template.New("").ParseFiles(sm))
+
+	// parse & execute the template
+	var b bytes.Buffer
+	if err := tmpl.ExecuteTemplate(bufio.NewWriter(&b), "sitemap", urls); err != nil {
+		return nil, fmt.Errorf("execute sitemap template failed: %v", err)
+	}
+
+	return b.Bytes(), err
 }

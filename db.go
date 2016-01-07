@@ -16,8 +16,8 @@ type Page struct {
 	Category    Category
 	Count       int
 	Description string
-	Snippet     Snippet
-	Snippets    []*Snippet
+	Snippet     *Snippet
+	Snippets    []Snippet
 	URL         string
 }
 
@@ -43,7 +43,15 @@ func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT code_snippets.category AS category, code_snippets.name AS name, code_snippets.slug AS slug, code_categories.name AS category_formal, code_categories.header AS greeting FROM code_snippets LEFT JOIN code_categories ON code_snippets.category=code_categories.category WHERE code_snippets.category='" + categoryPassed + "' ORDER BY name ASC")
+	rows, err := db.Query(`SELECT code_snippets.category AS category,
+	code_snippets.name AS name,
+	code_snippets.slug AS slug,
+	code_categories.name AS categoryFormal,
+	code_categories.header AS greeting
+	FROM code_snippets
+	LEFT JOIN code_categories
+	ON code_snippets.category=code_categories.category
+	WHERE code_snippets.category=$1 ORDER BY name ASC`, categoryPassed)
 	if err != nil {
 		return p, fmt.Errorf("querying for category (%s) failed: %v", categoryPassed, err)
 	}
@@ -51,11 +59,10 @@ func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 
 	for rows.Next() {
 		var category, categoryFormal, greeting, name, slug string
-		if err := rows.Scan(&category, &categoryFormal, &greeting, &name, &slug); err != nil {
+		if err := rows.Scan(&category, &name, &slug, &categoryFormal, &greeting); err != nil {
 			return p, fmt.Errorf("scanning rows for category (%s) and fields failed: %v", categoryPassed, err)
 		}
-		fmt.Printf("got %s, %s, %s\n", category, slug, name)
-		p.Snippets = append(p.Snippets, &Snippet{
+		p.Snippets = append(p.Snippets, Snippet{
 			Category: category,
 			Name:     name,
 			Slug:     slug,
@@ -73,14 +80,14 @@ func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 
 	if snippet != "" {
 		var category, description, name, slug, snippet string
-		err = db.QueryRow(`SELECT * FROM code_snippets WHERE slug=$1 AND category=$2 LIMIT 1`, snippet, categoryPassed).Scan(&category, &description, &name, &slug, &snippet)
+		err = db.QueryRow(`SELECT category, description, name, slug, snippet FROM code_snippets WHERE slug=$1 AND category=$2 LIMIT 1`, snippet, categoryPassed).Scan(&category, &description, &name, &slug, &snippet)
 		switch {
 		case err == sql.ErrNoRows:
 			return p, fmt.Errorf("querying for category (%s) and snippet (%s) returned no rows", categoryPassed, snippet)
 		case err != nil:
 			return p, fmt.Errorf("querying for category (%s) and snippet (%s) failed: %v", categoryPassed, snippet, err)
 		default:
-			p.Snippet = Snippet{
+			p.Snippet = &Snippet{
 				Category: category,
 				Name:     name,
 				Slug:     slug,
@@ -104,10 +111,34 @@ func search(dbConn, categoryPassed, q string) ([]map[string]interface{}, error) 
 	return jsonQuery(dbConn, query)
 }
 
-func sitemapQuery(dbConn string) ([]map[string]interface{}, error) {
-	q := "SELECT code_snippets.category AS category, code_snippets.slug AS slug FROM code_snippets"
+func sitemapQuery(dbConn string) (urls []Snippet, err error) {
+	db, err := sql.Open("postgres", dbConn)
+	if err != nil {
+		return urls, fmt.Errorf("opening database at %s failed: %v", dbConn, err)
+	}
+	defer db.Close()
 
-	return jsonQuery(dbConn, q)
+	rows, err := db.Query("SELECT code_snippets.category AS category, code_snippets.slug AS slug FROM code_snippets")
+	if err != nil {
+		return urls, fmt.Errorf("searching for sitemap query failed: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category, slug string
+		if err := rows.Scan(&category, &slug); err != nil {
+			return urls, fmt.Errorf("scanning rows for sitemap failed: %v", err)
+		}
+		urls = append(urls, Snippet{
+			Category: category,
+			Slug:     slug,
+		})
+	}
+	if err := rows.Err(); err != nil {
+		return urls, fmt.Errorf("scanning rows for sitemap overall failed: %v", err)
+	}
+
+	return urls, nil
 }
 
 func jsonQuery(dbConn, q string) (data []map[string]interface{}, err error) {

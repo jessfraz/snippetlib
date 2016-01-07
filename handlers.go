@@ -33,16 +33,14 @@ func (j JSONResponse) String() string {
 
 // Handler is the object which contains data to pass to the http handler functions.
 type Handler struct {
-	dbConn string
+	dbConn, sitemap string
 }
 
 func (h *Handler) sitemapHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debugf("[page] %s", r.URL)
 
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, JSONResponse{
-		"page": "sitemap.xml",
-	})
+	w.Header().Set("Content-Type", "application/xml")
+	fmt.Fprint(w, h.sitemap)
 }
 
 type searchRequest struct {
@@ -90,7 +88,7 @@ func (h *Handler) categoryHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 	category, ok := v["category"]
 	if !ok {
-		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %#v", v))
+		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %v", v))
 		return
 	}
 
@@ -103,12 +101,12 @@ func (h *Handler) snippetHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 	category, ok := v["category"]
 	if !ok {
-		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %#v", v))
+		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %v", v))
 		return
 	}
 	slug, ok := v["snippet"]
 	if !ok {
-		writeError(w, fmt.Sprintf("getting snippetparameter from vars failed: %#v", v))
+		writeError(w, fmt.Sprintf("getting snippet parameter from vars failed: %v", v))
 		return
 	}
 
@@ -129,10 +127,7 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, categor
 	}
 	page.URL = r.URL.String()
 
-	logrus.Infof("%#v", page)
-
 	// render the template
-	templateDir := path.Join(filesPrefix, "templates")
 	lp := path.Join(templateDir, "layout.html")
 
 	// set up custom functions
@@ -155,7 +150,7 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, categor
 	// parse & execute the template
 	tmpl := template.Must(template.New("").Funcs(funcMap).ParseFiles(lp))
 	if err := tmpl.ExecuteTemplate(w, "layout", page); err != nil {
-		writeError(w, fmt.Sprintf("Execute template failed: %v", err))
+		writeError(w, fmt.Sprintf("execute template failed: %v", err))
 		return
 	}
 }

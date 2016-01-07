@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"flag"
 	"fmt"
-	"html/template"
 	"net/http"
+	"os"
 	"path"
+	"text/template"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
@@ -45,7 +44,7 @@ func init() {
 
 func main() {
 	// get the sitemap
-	sitemap, err := getSitemap(dbConn)
+	_, err := getSitemap(dbConn)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -60,10 +59,9 @@ func main() {
 
 	// template handler
 	h := Handler{
-		dbConn:  dbConn,
-		sitemap: sitemap,
+		dbConn: dbConn,
 	}
-	r.HandleFunc("/sitemap.xml", h.sitemapHandler).Methods("GET")
+	r.PathPrefix("/sitemap.xml").Handler(http.StripPrefix("/", http.FileServer(http.Dir(filesPrefix))))
 	r.HandleFunc("/search", h.searchHandler).Methods("POST")
 	r.HandleFunc("/newsletter_signup", h.newsletterSignupHandler).Methods("POST")
 	r.HandleFunc("/{category}", h.categoryHandler).Methods("GET")
@@ -83,21 +81,29 @@ func main() {
 	}
 }
 
-func getSitemap(dbConn string) ([]byte, error) {
+// getSitemap takes a database connection and generates a sitemap from it.
+func getSitemap(dbConn string) (string, error) {
 	urls, err := sitemapQuery(dbConn)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// render the template
 	sm := path.Join(templateDir, "sitemap.xml")
 	tmpl := template.Must(template.New("").ParseFiles(sm))
 
+	// open the file we will write to
+	sitemap := path.Join(filesPrefix, "sitemap.xml")
+	f, err := os.OpenFile(sitemap, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		return "", fmt.Errorf("opening %s for sitemap failed: %v", sitemap, err)
+	}
+	defer f.Close()
+
 	// parse & execute the template
-	var b bytes.Buffer
-	if err := tmpl.ExecuteTemplate(bufio.NewWriter(&b), "sitemap", urls); err != nil {
-		return nil, fmt.Errorf("execute sitemap template failed: %v", err)
+	if err := tmpl.ExecuteTemplate(f, "sitemap", urls); err != nil {
+		return "", fmt.Errorf("execute sitemap template failed: %v", err)
 	}
 
-	return b.Bytes(), err
+	return sitemap, err
 }

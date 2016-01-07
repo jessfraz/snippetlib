@@ -37,13 +37,6 @@ type Handler struct {
 	sitemap []byte
 }
 
-func (h *Handler) sitemapHandler(w http.ResponseWriter, r *http.Request) {
-	logrus.Debugf("[page] %s", r.URL)
-
-	w.Header().Set("Content-Type", "application/xml")
-	fmt.Fprint(w, string(h.sitemap))
-}
-
 func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debugf("[page] %s", r.URL)
 
@@ -156,7 +149,7 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, categor
 
 // writeError logs the error and redirects the user to /.
 func writeError(w http.ResponseWriter, r *http.Request, msg string) {
-	logrus.Printf("server error: %s", msg)
+	logrus.Errorf("handler error: %s", msg)
 
 	http.Redirect(w, r, "/", 307)
 	return

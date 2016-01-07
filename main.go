@@ -70,8 +70,6 @@ func main() {
 	r.HandleFunc("/{category}/{snippet}", h.snippetHandler).Methods("GET")
 	r.HandleFunc("/", h.indexHandler).Methods("GET")
 
-	// TODO: 404
-
 	// set up the server
 	server := &http.Server{
 		Addr:    ":" + port,

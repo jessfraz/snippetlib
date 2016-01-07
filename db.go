@@ -36,6 +36,7 @@ type Snippet struct {
 	Snippet  string
 }
 
+// query returns the page struct from a query for a category and/or snippet.
 func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 	db, err := sql.Open("postgres", dbConn)
 	if err != nil {
@@ -100,6 +101,7 @@ func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 	return p, nil
 }
 
+// search returns the json from a search query for a category.
 func search(dbConn, categoryPassed, q string) ([]map[string]interface{}, error) {
 	query := "SELECT category, name, slug FROM code_snippets WHERE category='" + categoryPassed + "'"
 	if q != "" {
@@ -111,6 +113,7 @@ func search(dbConn, categoryPassed, q string) ([]map[string]interface{}, error) 
 	return jsonQuery(dbConn, query)
 }
 
+// sitemapQuery performs a database query to build a sitemap.
 func sitemapQuery(dbConn string) (urls []Snippet, err error) {
 	db, err := sql.Open("postgres", dbConn)
 	if err != nil {
@@ -141,6 +144,7 @@ func sitemapQuery(dbConn string) (urls []Snippet, err error) {
 	return urls, nil
 }
 
+// jsonQuery returns a json interface for a database query.
 func jsonQuery(dbConn, q string) (data []map[string]interface{}, err error) {
 	db, err := sql.Open("postgres", dbConn)
 	if err != nil {

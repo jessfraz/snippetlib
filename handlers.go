@@ -50,13 +50,13 @@ func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := r.ParseForm(); err != nil {
-		writeError(w, fmt.Sprintf("parsing form failed: %v", err))
+		writeError(w, r, fmt.Sprintf("parsing form failed: %v", err))
 		return
 	}
 
 	data, err := search(h.dbConn, r.Form.Get("category"), r.Form.Get("q"))
 	if err != nil {
-		writeError(w, err.Error())
+		writeError(w, r, err.Error())
 		return
 	}
 	str, err := json.MarshalIndent(data, "", "  ")
@@ -82,7 +82,7 @@ func (h *Handler) categoryHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 	category, ok := v["category"]
 	if !ok {
-		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %v", v))
+		writeError(w, r, fmt.Sprintf("getting category parameter from vars failed: %v", v))
 		return
 	}
 
@@ -95,12 +95,12 @@ func (h *Handler) snippetHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 	category, ok := v["category"]
 	if !ok {
-		writeError(w, fmt.Sprintf("getting category parameter from vars failed: %v", v))
+		writeError(w, r, fmt.Sprintf("getting category parameter from vars failed: %v", v))
 		return
 	}
 	slug, ok := v["snippet"]
 	if !ok {
-		writeError(w, fmt.Sprintf("getting snippet parameter from vars failed: %v", v))
+		writeError(w, r, fmt.Sprintf("getting snippet parameter from vars failed: %v", v))
 		return
 	}
 
@@ -116,10 +116,15 @@ func (h *Handler) indexHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, category, slug string) {
 	page, err := query(h.dbConn, category, slug)
 	if err != nil {
-		writeError(w, err.Error())
+		writeError(w, r, err.Error())
 		return
 	}
 	page.URL = r.URL.String()
+
+	if slug == "" && len(page.Snippets) == 0 {
+		writeError(w, r, fmt.Sprintf("no snippets found for category (%s)", category))
+		return
+	}
 
 	// render the template
 	lp := path.Join(templateDir, "layout.html")
@@ -144,18 +149,15 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, categor
 	// parse & execute the template
 	tmpl := template.Must(template.New("").Funcs(funcMap).ParseFiles(lp))
 	if err := tmpl.ExecuteTemplate(w, "layout", page); err != nil {
-		writeError(w, fmt.Sprintf("execute template failed: %v", err))
+		writeError(w, r, fmt.Sprintf("execute template failed: %v", err))
 		return
 	}
 }
 
-// writeError sends an error back to the requester
-// and also logs the error.
-func writeError(w http.ResponseWriter, msg string) {
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, JSONResponse{
-		"error": msg,
-	})
-	logrus.Printf("writing error: %s", msg)
+// writeError logs the error and redirects the user to /.
+func writeError(w http.ResponseWriter, r *http.Request, msg string) {
+	logrus.Printf("server error: %s", msg)
+
+	http.Redirect(w, r, "/", 307)
 	return
 }

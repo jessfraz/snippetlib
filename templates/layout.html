@@ -1,0 +1,159 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en-US">
+	<head>
+		<base href="/">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=1100">
+
+        <!-- meta tags -->
+        <meta name="keywords" content="snippets,code,instant,search,php,html,facebook,api,instgram,css,google analytics, twitter,tumblr,sql,jquery, javascript, wordpress">
+        <meta name="description" content="{{stripTags .Description}}">
+        <meta name="author" content="Jess Frazelle, https://frazelledazzell.com">
+
+        <!-- facebook meta tags -->
+        <meta property="og:title" content="{{if .Snippet.Name}}{{toTitle .Snippet.Name }} | {{end}}{{toUppercase .Category.Name }}"/>
+        <meta property="og:image" content="https://snippetlib.com/img/share.png"/>
+        <meta property="og:site_name" content="Code Snippet Library by Jess Frazelle"/>
+        <meta property="og:description" content="{{stripTags .Description}}"/>
+        <meta property="og:url" content="https://snippetlib.com{{.URL}}"/>
+        <meta property="og:type" content="website"/>
+
+        <!-- twitter card meta tags -->
+        <meta property="twitter:account_id" content="285428413" />
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@frazelledazzell">
+        <meta name="twitter:creator" content="@frazelledazzell">
+        <meta name="twitter:title" content="{{if .Snippet.Name}}{{toTitle .Snippet.Name}} | {{end}}{{toUppercase .Category.Name}} | Code Snippet Library by Jess Frazelle">
+        <meta name="twitter:description" content="{{stripTags .Description}}">
+        <meta name="twitter:image:src" content="https://snippetlib.com/img/share.png">
+        <meta name="twitter:image:width" content="512">
+        <meta name="twitter:image:height" content="512">
+        <meta name="twitter:domain" content="snippetlib.com">
+
+        <title>{{if .Snippet.Name}}{{toTitle .Snippet.Name}} | {{end}}{{toUppercase .Category.Name}} | Code Snippet Library by Jess Frazelle</title>
+
+		<link rel="shortcut icon" href="/static/favicon.ico">
+
+		<link href="/static/styles/styles.css" rel="stylesheet" type="text/css"/>
+	    <script type="text/javascript" src="//use.typekit.net/aue4cav.js"></script>
+        <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+		<script src="/static/js/lib/modernizr-2.6.2.min.js"></script>
+	</head>
+    <body>
+
+
+        <header class="navbar navbar-fixed-top navbar-inverse">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="brand" href="/">Code Snippet Library</a>
+                    <div class="nav-collapse">
+                        <ul class="nav">
+                            <li{{if eq .Category.Slug "html"}} class="active"{{end}}><a href="/html">html</a></li>
+                            <li{{if eq .Category.Slug "css"}} class="active"{{end}}><a href="/css">css</a></li>
+                            <li{{if eq .Category.Slug "jquery"}} class="active"{{end}}><a href="/jquery">javascript</a></li>
+                            <li{{if eq .Category.Slug "php"}} class="active"{{end}}><a href="/php">php</a></li>
+                            <li{{if eq .Category.Slug "terminal"}} class="active"{{end}}><a href="/terminal">terminal</a></li>
+                            <li{{if eq .Category.Slug "sql"}} class="active"{{end}}><a href="/sql">sql</a></li>
+                            <li{{if eq .Category.Slug "wordpress"}} class="active"{{end}}><a href="/wordpress">wordpress</a></li>
+                            <li class="dropdown" id="apis">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#apis">api <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/facebook">Facebook</a></li>
+                                    <li><a href="/foursquare">Foursquare</a></li>
+                                    <li><a href="/google_analytics">Google Analytics</a></li>
+                                    <li><a href="/google_charts">Google Charts</a></li>
+                                    <li><a href="/google_maps">Google Maps</a></li>
+                                    <li><a href="/instagram">Instagram</a></li>
+                                    <li><a href="/lastfm">Last.Fm</a></li>
+                                    <li><a href="/mailchimp">Mailchimp</a></li>
+                                    <li><a href="/mailgun">Mailgun</a></li>
+                                    <li><a href="/pinterest">Pinterest</a></li>
+                                    <li><a href="/tumblr">Tumblr</a></li>
+                                    <li><a href="/twitter">Twitter</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav pull-right social-nav">
+                            <li><a href="https://twitter.com/frazelledazzell" target="_blank" onClick="_gaq.push(['_trackEvent', 'twitter', 'header']);"><span class="ss-icon ss-social-circle ss-twitter"></span></a></li>
+                            <li><a href="https://github.com/jfrazelle" target="_blank"  onClick="_gaq.push(['_trackEvent', 'github', 'header']);"><span class="ss-icon ss-social-circle ss-github"></span></a></li>
+                            <li><a class="email-scroll" href="#email"><span class="ss-icon ss-social-circle ss-mail"></span></a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div><!--/.container -->
+            </div><!--/.navbar-inner -->
+        </header><!--/.navbar -->
+
+
+        <section class="container-fluid">
+            <div class="row wrapper">
+
+
+                <div class="span4">
+                    <div class="well sidebar-nav">
+                        <div id="search-header">
+                            <form class="search" method="get">
+                                <input class="input focused" id="search-box" name="search" type="text" autocomplete="off" placeholder="Type to find {{.Category.Name}} snippets." />
+                                <input type="submit" value="" class="hide" />
+			                </form>
+		                </div>
+		                <div id="results">
+		                    {{range $key, $value := .Snippets}}
+                            <a class="block" href="/{{$value.Category}}/{{$value.Slug}}">{{$value.Name}}</a>
+                            {{end}}
+                        </div>
+	                </div><!--/.well -->
+                </div><!--/span-->
+
+                <div class="span8 pull-right">
+                    {{if .Snippet}}
+
+                    <ul class="breadcrumb">
+                        <li><a href="/{{.Category.Slug}}">{{.Category.Name}}</a><span class="divider">/</span></li>
+	                    <li class="active">{{.Snippet.Name}}</li>
+	                    <li class="pull-right"><span class="badge badge-info">{{.Count}}</span></li>
+                    </ul>
+
+                    <h2>{{stripSlashes .Snippet.Name}}</h2>
+		            <p class="description">{{stripSlashes .Description}}</p>
+		            <pre class="prettyprint">{{stripSlashes .Snippet.Snippet}}</pre>
+                    {{else}}
+                    <blockquote>
+			            <p><strong>{{.Category.Greeting}}</strong><br>You are currently browsing the <strong>{{.Category.Name}}</strong> snippets. You can search these snippets on your left or select a different category above.</p>
+			        </blockquote>
+
+                    {{end}}
+                </div>
+
+
+            </div>
+        </section>
+
+
+        <footer>
+            <div class="container-fluid">
+                <p class="pull-right"></p>
+                <form class="mailchimp pull-right">
+                    <input name="email" type="email" placeholder="Email Address" />
+                    <button type="submit" class="btn purple"><span class="ss-icon ss-social ss-mail"></span></button>
+                </form>
+                <p>
+                    <a href="https://twitter.com/frazelledazzell" target="_blank" onClick="_gaq.push(['_trackEvent', 'twitter', 'footer']);"><span class="ss-icon ss-twitter"></span></a>
+                    <a href="https://github.com/jfrazelle" target="_blank" onClick="_gaq.push(['_trackEvent', 'github', 'footer']);"><span class="ss-icon ss-github"></span></a>
+                    <a href="https://jessfraz.com" target="_blank" onClick="_gaq.push(['_trackEvent', 'website', 'footer']);"> about </a>
+                    <a href="https://blog.jessfraz.com" target="_blank" onClick="_gaq.push(['_trackEvent', 'blog', 'footer']);"> blog </a>
+                </p>
+            </div>
+        </footer>
+
+
+        <script>var category = '{{.Category.Slug}}';</script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/static/js/lib/jquery-1.9.1.min.js"><\/script>')</script>
+        <script src="/static/js/snippetlib.js"></script>
+        <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-29404280-2', 'snippetlib.com');ga('send', 'pageview');</script>
+
+    </body>
+</html>
+{{end}}

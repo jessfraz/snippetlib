@@ -33,7 +33,8 @@ func (j JSONResponse) String() string {
 
 // Handler is the object which contains data to pass to the http handler functions.
 type Handler struct {
-	dbConn, sitemap string
+	dbConn  string
+	sitemap []byte
 }
 
 func (h *Handler) sitemapHandler(w http.ResponseWriter, r *http.Request) {

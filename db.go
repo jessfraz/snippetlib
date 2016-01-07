@@ -79,8 +79,8 @@ func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 	p.Description = defaultDescription
 
 	if snippet != "" {
-		var category, description, name, slug, snippet string
-		err = db.QueryRow(`SELECT category, description, name, slug, snippet FROM code_snippets WHERE slug=$1 AND category=$2 LIMIT 1`, snippet, categoryPassed).Scan(&category, &description, &name, &slug, &snippet)
+		var category, description, name, slug, snip string
+		err = db.QueryRow(`SELECT category, description, name, slug, snippet FROM code_snippets WHERE slug=$1 AND category=$2 LIMIT 1`, snippet, categoryPassed).Scan(&category, &description, &name, &slug, &snip)
 		switch {
 		case err == sql.ErrNoRows:
 			return p, fmt.Errorf("querying for category (%s) and snippet (%s) returned no rows", categoryPassed, snippet)
@@ -91,7 +91,7 @@ func query(dbConn, categoryPassed, snippet string) (p Page, err error) {
 				Category: category,
 				Name:     name,
 				Slug:     slug,
-				Snippet:  snippet,
+				Snippet:  snip,
 			}
 			p.Description = description
 		}

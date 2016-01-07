@@ -13,7 +13,7 @@
         <meta name="author" content="Jess Frazelle, https://frazelledazzell.com">
 
         <!-- facebook meta tags -->
-        <meta property="og:title" content="{{if .Snippet.Name}}{{toTitle .Snippet.Name }} | {{end}}{{toUppercase .Category.Name }}"/>
+        <meta property="og:title" content="{{if .Snippet}}{{toTitle .Snippet.Name }} | {{end}}{{toUppercase .Category.Name }}"/>
         <meta property="og:image" content="https://snippetlib.com/img/share.png"/>
         <meta property="og:site_name" content="Code Snippet Library by Jess Frazelle"/>
         <meta property="og:description" content="{{stripTags .Description}}"/>
@@ -25,14 +25,14 @@
         <meta name="twitter:card" content="summary">
         <meta name="twitter:site" content="@frazelledazzell">
         <meta name="twitter:creator" content="@frazelledazzell">
-        <meta name="twitter:title" content="{{if .Snippet.Name}}{{toTitle .Snippet.Name}} | {{end}}{{toUppercase .Category.Name}} | Code Snippet Library by Jess Frazelle">
+        <meta name="twitter:title" content="{{if .Snippet}}{{toTitle .Snippet.Name}} | {{end}}{{toUppercase .Category.Name}} | Code Snippet Library by Jess Frazelle">
         <meta name="twitter:description" content="{{stripTags .Description}}">
         <meta name="twitter:image:src" content="https://snippetlib.com/img/share.png">
         <meta name="twitter:image:width" content="512">
         <meta name="twitter:image:height" content="512">
         <meta name="twitter:domain" content="snippetlib.com">
 
-        <title>{{if .Snippet.Name}}{{toTitle .Snippet.Name}} | {{end}}{{toUppercase .Category.Name}} | Code Snippet Library by Jess Frazelle</title>
+        <title>{{if .Snippet}}{{toTitle .Snippet.Name}} | {{end}}{{toUppercase .Category.Name}} | Code Snippet Library by Jess Frazelle</title>
 
 		<link rel="shortcut icon" href="/static/favicon.ico">
 

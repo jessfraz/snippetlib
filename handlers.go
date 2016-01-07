@@ -41,7 +41,7 @@ func (h *Handler) sitemapHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debugf("[page] %s", r.URL)
 
 	w.Header().Set("Content-Type", "application/xml")
-	fmt.Fprint(w, h.sitemap)
+	fmt.Fprint(w, string(h.sitemap))
 }
 
 func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
 		logrus.Warn("marshaling search data failed: %v", err)
 	}
 
-	fmt.Fprint(w, str)
+	fmt.Fprint(w, string(str))
 }
 
 func (h *Handler) newsletterSignupHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,5 +1,7 @@
 # snippetlib
 
+[![Circle CI](https://circleci.com/gh/jfrazelle/snippetlib.svg?style=svg)](https://circleci.com/gh/jfrazelle/snippetlib)
+
 Server to host code snippets.
 
 ```

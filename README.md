@@ -1,6 +1,6 @@
 # snippetlib
 
-[![Circle CI](https://circleci.com/gh/jfrazelle/snippetlib.svg?style=svg)](https://circleci.com/gh/jfrazelle/snippetlib)
+[![Travis CI](https://travis-ci.org/jfrazelle/snippetlib.svg?branch=master)](https://travis-ci.org/jfrazelle/snippetlib)
 
 Server to host code snippets.
 

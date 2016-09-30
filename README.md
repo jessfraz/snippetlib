@@ -1,6 +1,6 @@
 # snippetlib
 
-[![Travis CI](https://travis-ci.org/jfrazelle/snippetlib.svg?branch=master)](https://travis-ci.org/jfrazelle/snippetlib)
+[![Travis CI](https://travis-ci.org/jessfraz/snippetlib.svg?branch=master)](https://travis-ci.org/jessfraz/snippetlib)
 
 Server to host code snippets.
 

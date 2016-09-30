@@ -9,7 +9,7 @@ RUN	apk add --no-cache \
 
 COPY static /src/static
 COPY templates /src/templates
-COPY . /go/src/github.com/jfrazelle/snippetlib
+COPY . /go/src/github.com/jessfraz/snippetlib
 
 RUN set -x \
 	&& apk add --no-cache --virtual .build-deps \
@@ -18,7 +18,7 @@ RUN set -x \
 		gcc \
 		libc-dev \
 		libgcc \
-	&& cd /go/src/github.com/jfrazelle/snippetlib \
+	&& cd /go/src/github.com/jessfraz/snippetlib \
 	&& go build -o /usr/bin/snippetlib . \
 	&& apk del .build-deps \
 	&& rm -rf /go \

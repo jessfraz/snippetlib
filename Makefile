@@ -119,6 +119,25 @@ tag: ## Create a new git tag to prepare to build a release
 	git tag -sa $(VERSION) -m "$(VERSION)"
 	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a travis build."
 
+.PHONY: dbuild ## Build the Dockerfile locally
+DOCKER_IMAGE := r.j3ss.co/snippetlib
+dbuild:
+	@docker build --rm --force-rm -t $(DOCKER_IMAGE) .
+
+.PHONY: db ## Spin up a local test database
+db:
+	@docker run -d \
+		--name snippets-db \
+		-p 3000:3000 \
+		-v $(HOME)/snippets-db:/var/lib/postgresql/data \
+		postgres:9.3
+
+.PHONY: drun
+drun: dbuild ## Run the Dockerfile locally
+	@docker run --rm -it \
+		--net container:snippets-db \
+		$(DOCKER_IMAGE) -d --mailchimp-apikey "$(MAILCHIMP_APIKEY)" --mailchimp-listid "$(MAILCHIMP_LISTID)"
+
 .PHONY: clean
 clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"

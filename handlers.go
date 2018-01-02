@@ -9,10 +9,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/jessfraz/snippetlib/mailchimp"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 // JSONResponse is a map[string]string

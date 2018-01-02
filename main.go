@@ -7,9 +7,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/jessfraz/snippetlib/version"
+	"github.com/sirupsen/logrus"
 )
 
 const (

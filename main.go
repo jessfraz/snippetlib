@@ -2,14 +2,31 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
+	"os"
 	"path"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"github.com/jessfraz/snippetlib/version"
 )
 
 const (
+	// BANNER is what is printed for help/info output.
+	BANNER = `           _                  _   _ _ _
+ ___ _ __ (_)_ __  _ __   ___| |_| (_) |__
+/ __| '_ \| | '_ \| '_ \ / _ \ __| | | '_ \
+\__ \ | | | | |_) | |_) |  __/ |_| | | |_) |
+|___/_| |_|_| .__/| .__/ \___|\__|_|_|_.__/
+            |_|   |_|
+
+ Server to host code snippets.
+ Version: %s
+ Build: %s
+
+`
+
 	filesPrefix = "/src"
 )
 
@@ -22,6 +39,7 @@ var (
 	certFile string
 	keyFile  string
 	debug    bool
+	vrsn     bool
 
 	templateDir = path.Join(filesPrefix, "templates")
 )
@@ -35,8 +53,21 @@ func init() {
 	flag.StringVar(&certFile, "cert", "", "path to ssl certificate")
 	flag.StringVar(&keyFile, "key", "", "path to ssl key")
 
+	flag.BoolVar(&vrsn, "version", false, "print version and exit")
+	flag.BoolVar(&vrsn, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&debug, "d", false, "run in debug mode")
+
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.VERSION, version.GITCOMMIT))
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
+
+	if vrsn {
+		fmt.Printf("snippetlib version %s, build %s", version.VERSION, version.GITCOMMIT)
+		os.Exit(0)
+	}
 
 	// set log level
 	if debug {
@@ -46,8 +77,7 @@ func init() {
 
 func main() {
 	// get the sitemap
-	_, err := getSitemap(dbConn)
-	if err != nil {
+	if _, err := getSitemap(dbConn); err != nil {
 		logrus.Fatal(err)
 	}
 

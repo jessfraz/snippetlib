@@ -4,9 +4,37 @@
 
 Server to host code snippets.
 
+## Installation
+
+#### Binaries
+
+- **darwin** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-darwin-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-darwin-amd64)
+- **freebsd** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-freebsd-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-freebsd-amd64)
+- **linux** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-linux-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-linux-amd64) / [arm](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-linux-arm) / [arm64](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-linux-arm64)
+- **solaris** [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-solaris-amd64)
+- **windows** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-windows-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.0.0/snippetlib-windows-amd64)
+
+#### Via Go
+
+```bash
+$ go get github.com/jessfraz/snippetlib
+```
+
+## Usage
+
 ```
 $ snippetlib --help
-Usage of snippetlib:
+           _                  _   _ _ _
+ ___ _ __ (_)_ __  _ __   ___| |_| (_) |__
+/ __| '_ \| | '_ \| '_ \ / _ \ __| | | '_ \
+\__ \ | | | | |_) | |_) |  __/ |_| | | |_) |
+|___/_| |_|_| .__/| .__/ \___|\__|_|_|_.__/
+            |_|   |_|
+
+ Server to host code snippets.
+ Version: v0.0.0
+ Build: f5f7038
+
   -cert string
         path to ssl certificate
   -d    run in debug mode
@@ -20,4 +48,7 @@ Usage of snippetlib:
         Mailchimp List ID for newsletter to subscribe emails to
   -p string
         port for server to run on (default "3000")
+  -v    print version and exit (shorthand)
+  -version
+        print version and exit
 ```

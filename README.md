@@ -8,11 +8,11 @@ Server to host code snippets.
 
 #### Binaries
 
-- **darwin** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-darwin-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-darwin-amd64)
-- **freebsd** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-freebsd-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-freebsd-amd64)
-- **linux** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-linux-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-linux-amd64) / [arm](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-linux-arm) / [arm64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-linux-arm64)
-- **solaris** [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-solaris-amd64)
-- **windows** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-windows-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.0/snippetlib-windows-amd64)
+- **darwin** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-darwin-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-darwin-amd64)
+- **freebsd** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-freebsd-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-freebsd-amd64)
+- **linux** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-amd64) / [arm](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-arm) / [arm64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-arm64)
+- **solaris** [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-solaris-amd64)
+- **windows** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-windows-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-windows-amd64)
 
 #### Via Go
 
@@ -32,7 +32,7 @@ $ snippetlib --help
             |_|   |_|
 
  Server to host code snippets.
- Version: v0.2.0
+ Version: v0.2.1
  Build: f5f7038
 
   -cert string

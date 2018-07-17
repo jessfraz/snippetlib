@@ -34,7 +34,7 @@ $ snippetlib --help
             |_|   |_|
 
  Server to host code snippets.
- Version: v0.2.1
+ Version: v0.2.2
  Build: f5f7038
 
   -cert string

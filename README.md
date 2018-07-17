@@ -25,32 +25,22 @@ $ go get github.com/jessfraz/snippetlib
 ## Usage
 
 ```
-$ snippetlib --help
-           _                  _   _ _ _
- ___ _ __ (_)_ __  _ __   ___| |_| (_) |__
-/ __| '_ \| | '_ \| '_ \ / _ \ __| | | '_ \
-\__ \ | | | | |_) | |_) |  __/ |_| | | |_) |
-|___/_| |_|_| .__/| .__/ \___|\__|_|_|_.__/
-            |_|   |_|
+$ snippetlib -h
+snippetlib -  Server to host code snippets.
 
- Server to host code snippets.
- Version: v0.2.2
- Build: f5f7038
+Usage: snippetlib <command>
 
-  -cert string
-        path to ssl certificate
-  -d    run in debug mode
-  -dbconn string
-        database connection string (default "postgres://postgres:@127.0.0.1:5432/db?sslmode=disable")
-  -key string
-        path to ssl key
-  -mailchimp-apikey string
-        Mailchimp APIKey for subscribing to newsletters
-  -mailchimp-listid string
-        Mailchimp List ID for newsletter to subscribe emails to
-  -p string
-        port for server to run on (default "3000")
-  -v    print version and exit (shorthand)
-  -version
-        print version and exit
+Flags:
+
+  --cert              path to ssl certificate (default: <none>)
+  -d                  enable debug logging (default: false)
+  --dbconn            database connection string (default: postgres://postgres:@127.0.0.1:5432/db?sslmode=disable)
+  --key               path to ssl key (default: <none>)
+  --mailchimp-apikey  Mailchimp APIKey for subscribing to newsletters (default: <none>)
+  --mailchimp-listid  Mailchimp List ID for newsletter to subscribe emails to (default: <none>)
+  -p                  port for server to run on (default: 3000)
+
+Commands:
+
+  version  Show the version information.
 ```

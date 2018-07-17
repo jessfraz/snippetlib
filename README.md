@@ -1,22 +1,24 @@
 # snippetlib
 
-[![Travis CI](https://travis-ci.org/jessfraz/snippetlib.svg?branch=master)](https://travis-ci.org/jessfraz/snippetlib)
+[![Travis CI](https://img.shields.io/travis/jessfraz/snippetlib.svg?style=for-the-badge)](https://travis-ci.org/jessfraz/snippetlib)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=for-the-badge)](https://godoc.org/github.com/jessfraz/snippetlib)
 
 Server to host code snippets.
+
+ * [Installation](README.md#installation)
+      * [Binaries](README.md#binaries)
+      * [Via Go](README.md#via-go)
+ * [Usage](README.md#usage)
 
 ## Installation
 
 #### Binaries
 
-- **darwin** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-darwin-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-darwin-amd64)
-- **freebsd** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-freebsd-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-freebsd-amd64)
-- **linux** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-amd64) / [arm](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-arm) / [arm64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-linux-arm64)
-- **solaris** [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-solaris-amd64)
-- **windows** [386](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-windows-386) / [amd64](https://github.com/jessfraz/snippetlib/releases/download/v0.2.1/snippetlib-windows-amd64)
+For installation instructions from binaries please visit the [Releases Page](https://github.com/jessfraz/snippetlib/releases).
 
 #### Via Go
 
-```bash
+```console
 $ go get github.com/jessfraz/snippetlib
 ```
 

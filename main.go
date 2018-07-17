@@ -1,32 +1,21 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"path"
+	"syscall"
 
+	"github.com/genuinetools/pkg/cli"
 	"github.com/gorilla/mux"
 	"github.com/jessfraz/snippetlib/version"
 	"github.com/sirupsen/logrus"
 )
 
 const (
-	// BANNER is what is printed for help/info output.
-	BANNER = `           _                  _   _ _ _
- ___ _ __ (_)_ __  _ __   ___| |_| (_) |__
-/ __| '_ \| | '_ \| '_ \ / _ \ __| | | '_ \
-\__ \ | | | | |_) | |_) |  __/ |_| | | |_) |
-|___/_| |_|_| .__/| .__/ \___|\__|_|_|_.__/
-            |_|   |_|
-
- Server to host code snippets.
- Version: %s
- Build: %s
-
-`
-
 	filesPrefix = "/src"
 )
 
@@ -39,76 +28,94 @@ var (
 	certFile string
 	keyFile  string
 	debug    bool
-	vrsn     bool
 
 	templateDir = path.Join(filesPrefix, "templates")
 )
 
-func init() {
-	flag.StringVar(&dbConn, "dbconn", "postgres://postgres:@127.0.0.1:5432/db?sslmode=disable", "database connection string")
-	flag.StringVar(&mailchimpAPIKey, "mailchimp-apikey", "", "Mailchimp APIKey for subscribing to newsletters")
-	flag.StringVar(&mailchimpListID, "mailchimp-listid", "", "Mailchimp List ID for newsletter to subscribe emails to")
-
-	flag.StringVar(&port, "p", "3000", "port for server to run on")
-	flag.StringVar(&certFile, "cert", "", "path to ssl certificate")
-	flag.StringVar(&keyFile, "key", "", "path to ssl key")
-
-	flag.BoolVar(&vrsn, "version", false, "print version and exit")
-	flag.BoolVar(&vrsn, "v", false, "print version and exit (shorthand)")
-	flag.BoolVar(&debug, "d", false, "run in debug mode")
-
-	flag.Usage = func() {
-		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.VERSION, version.GITCOMMIT))
-		flag.PrintDefaults()
-	}
-
-	flag.Parse()
-
-	if vrsn {
-		fmt.Printf("snippetlib version %s, build %s", version.VERSION, version.GITCOMMIT)
-		os.Exit(0)
-	}
-
-	// set log level
-	if debug {
-		logrus.SetLevel(logrus.DebugLevel)
-	}
-}
-
 func main() {
-	// get the sitemap
-	if _, err := getSitemap(dbConn); err != nil {
-		logrus.Fatal(err)
+	// Create a new cli program.
+	p := cli.NewProgram()
+	p.Name = "snippetlib"
+	p.Description = "Server to host code snippets"
+
+	// Set the GitCommit and Version.
+	p.GitCommit = version.GITCOMMIT
+	p.Version = version.VERSION
+
+	// Setup the global flags.
+	p.FlagSet = flag.NewFlagSet("global", flag.ExitOnError)
+	p.FlagSet.StringVar(&dbConn, "dbconn", "postgres://postgres:@127.0.0.1:5432/db?sslmode=disable", "database connection string")
+	p.FlagSet.StringVar(&mailchimpAPIKey, "mailchimp-apikey", "", "Mailchimp APIKey for subscribing to newsletters")
+	p.FlagSet.StringVar(&mailchimpListID, "mailchimp-listid", "", "Mailchimp List ID for newsletter to subscribe emails to")
+
+	p.FlagSet.StringVar(&port, "p", "3000", "port for server to run on")
+	p.FlagSet.StringVar(&certFile, "cert", "", "path to ssl certificate")
+	p.FlagSet.StringVar(&keyFile, "key", "", "path to ssl key")
+
+	p.FlagSet.BoolVar(&debug, "d", false, "enable debug logging")
+
+	// Set the before function.
+	p.Before = func(ctx context.Context) error {
+		// Set the log level.
+		if debug {
+			logrus.SetLevel(logrus.DebugLevel)
+		}
+
+		return nil
 	}
 
-	// create mux router
-	r := mux.NewRouter()
-	r.StrictSlash(true)
+	// Set the main program action.
+	p.Action = func(ctx context.Context, args []string) error {
+		// On ^C, or SIGTERM handle exit.
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt)
+		signal.Notify(c, syscall.SIGTERM)
+		go func() {
+			for sig := range c {
+				logrus.Infof("Received %s, exiting.", sig.String())
+				os.Exit(0)
+			}
+		}()
 
-	// static files handler
-	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir(path.Join(filesPrefix, "static"))))
-	r.PathPrefix("/static/").Handler(staticHandler)
+		// get the sitemap
+		if _, err := getSitemap(dbConn); err != nil {
+			logrus.Fatal(err)
+		}
 
-	// template handler
-	h := Handler{
-		dbConn: dbConn,
-	}
-	r.PathPrefix("/sitemap.xml").Handler(http.StripPrefix("/", http.FileServer(http.Dir(filesPrefix))))
-	r.HandleFunc("/search", h.searchHandler).Methods("POST")
-	r.HandleFunc("/newsletter_signup", h.newsletterSignupHandler).Methods("POST")
-	r.HandleFunc("/{category}", h.categoryHandler).Methods("GET")
-	r.HandleFunc("/{category}/{snippet}", h.snippetHandler).Methods("GET")
-	r.HandleFunc("/", h.indexHandler).Methods("GET")
+		// create mux router
+		r := mux.NewRouter()
+		r.StrictSlash(true)
 
-	// set up the server
-	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: r,
+		// static files handler
+		staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir(path.Join(filesPrefix, "static"))))
+		r.PathPrefix("/static/").Handler(staticHandler)
+
+		// template handler
+		h := Handler{
+			dbConn: dbConn,
+		}
+		r.PathPrefix("/sitemap.xml").Handler(http.StripPrefix("/", http.FileServer(http.Dir(filesPrefix))))
+		r.HandleFunc("/search", h.searchHandler).Methods("POST")
+		r.HandleFunc("/newsletter_signup", h.newsletterSignupHandler).Methods("POST")
+		r.HandleFunc("/{category}", h.categoryHandler).Methods("GET")
+		r.HandleFunc("/{category}/{snippet}", h.snippetHandler).Methods("GET")
+		r.HandleFunc("/", h.indexHandler).Methods("GET")
+
+		// set up the server
+		server := &http.Server{
+			Addr:    ":" + port,
+			Handler: r,
+		}
+		logrus.Infof("Starting server on port %q", port)
+		if certFile != "" && keyFile != "" {
+			logrus.Fatal(server.ListenAndServeTLS(certFile, keyFile))
+		} else {
+			logrus.Fatal(server.ListenAndServe())
+		}
+
+		return nil
 	}
-	logrus.Infof("Starting server on port %q", port)
-	if certFile != "" && keyFile != "" {
-		logrus.Fatal(server.ListenAndServeTLS(certFile, keyFile))
-	} else {
-		logrus.Fatal(server.ListenAndServe())
-	}
+
+	// Run our program.
+	p.Run()
 }

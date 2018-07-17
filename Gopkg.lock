@@ -2,63 +2,72 @@
 
 
 [[projects]]
-  digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
+  branch = "master"
+  digest = "1:a13be74593657711ea18b717264dd9f7ff963976cd8f75ba9457f38bd2dd311c"
+  name = "github.com/genuinetools/pkg"
+  packages = ["cli"]
+  pruneopts = "NUT"
+  revision = "c18317647fb0f5e1bc0cbcb7f44373efa1081976"
+
+[[projects]]
+  digest = "1:c01767916c59f084bb7c41a7d5877c0f3099b1595cfa066e84ec6ad6b084dd89"
   name = "github.com/gorilla/context"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "NUT"
   revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
   version = "v1.1.1"
 
 [[projects]]
   branch = "master"
-  digest = "1:1fd8e09b6a8cd34b78bb4ef432d1aeb62e484b22e9393deba4c7b542233b1020"
+  digest = "1:6046a17435ae5ebf6b49f9288a85766f3492b4be5db3695ec37c3cfffca2d877"
   name = "github.com/gorilla/mux"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "NUT"
   revision = "cb4698366aa625048f3b815af6a0dea8aef9280a"
 
 [[projects]]
   branch = "master"
-  digest = "1:6b8e4fbd48235132eb66a4adea7acb0a2bd1271f543d54415d0c3174823efa37"
+  digest = "1:2c52c3bfa3e106abd7df09126db04bd385aa0f3c250508d8568896253e80cb10"
   name = "github.com/lib/pq"
   packages = [
     ".",
     "oid",
   ]
-  pruneopts = ""
+  pruneopts = "NUT"
   revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
 
 [[projects]]
-  digest = "1:f2cc92b78b2f3b76ab0f9daddddd28627bcfcc6cacf119029aa3850082d95079"
+  digest = "1:6989062eb7ccf25cf38bf4fe3dba097ee209f896cda42cefdca3927047bef7b6"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "NUT"
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
   version = "v1.0.5"
 
 [[projects]]
   branch = "master"
-  digest = "1:e79c3d6b195477b429f017aaa02af135249bbdff31c9acbd8a93bb37a4ef7d3b"
+  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  pruneopts = ""
+  pruneopts = "NUT"
   revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
 
 [[projects]]
   branch = "master"
-  digest = "1:880f5ae3ffdd8741fe179f0f70b46df57fcdd746f3a0e9d0e189bb6a241535e4"
+  digest = "1:64107e3c8f52f341891a565d117bf263ed396fe0c16bad19634b25be25debfaa"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
-  pruneopts = ""
-  revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
+  pruneopts = "NUT"
+  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/genuinetools/pkg/cli",
     "github.com/gorilla/mux",
     "github.com/lib/pq",
     "github.com/sirupsen/logrus",

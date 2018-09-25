@@ -23,13 +23,10 @@ RUN set -x \
 	&& rm -rf /go \
 	&& echo "Build complete."
 
-FROM scratch
+FROM alpine:latest
 
 COPY --from=builder /usr/bin/snippetlib /usr/bin/snippetlib
 COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs
-
-COPY static /src/static
-COPY templates /src/templates
 
 ENTRYPOINT [ "snippetlib" ]
 CMD [ "--help" ]

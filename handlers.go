@@ -55,7 +55,7 @@ func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	str, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		logrus.Warn("marshaling search data failed: %v", err)
+		logrus.Warnf("marshaling search data failed: %v", err)
 	}
 
 	fmt.Fprint(w, string(str))

@@ -34,8 +34,7 @@ func (j JSONResponse) String() string {
 
 // Handler is the object which contains data to pass to the http handler functions.
 type Handler struct {
-	dbConn  string
-	sitemap []byte
+	dbConn string
 }
 
 func (h *Handler) searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -165,6 +164,5 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, r *http.Request, categor
 func writeError(w http.ResponseWriter, r *http.Request, msg string) {
 	logrus.Errorf("handler error: %s", msg)
 
-	http.Redirect(w, r, "/", 307)
-	return
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
